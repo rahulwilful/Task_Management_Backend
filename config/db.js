@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv").config();
 const mongoose = require("mongoose");
 
-const MongoDBURI = process.env.MONGOURL;
+const MongoDBURI = process.env.MONGODBURI;
 
 const connectToMongo = async () => {
   try {
