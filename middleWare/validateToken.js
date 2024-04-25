@@ -1,0 +1,35 @@
+const jwt = require("jsonwebtoken");
+const secrete = "test";
+
+const validateToken = async (req, res, next) => {
+  const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+  try {
+    let token;
+    let authHeader = req.headers.Authorization || req.headers.authorization;
+
+    if (!authHeader) {
+      return res.status(401).json({ message: "User token not found" });
+    }
+
+    if (authHeader && authHeader.startsWith("Bearer")) {
+      token = authHeader.split(" ")[1];
+      jwt.verify(token, secrete, (err, decoded) => {
+        if (err) {
+          //console.log(err);
+          return res.status(401).json({ error: err, message: "User is not authorized" });
+        }
+
+        req.user = decoded.user;
+        next();
+      });
+
+      if (!token) {
+        return res.status(401).json({ message: "User is not authorized" });
+      }
+    }
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+module.exports = validateToken;
